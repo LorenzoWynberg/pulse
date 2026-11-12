@@ -8,7 +8,7 @@ function load() {
     if (
       s !== null &&
       typeof s === 'object' &&
-      Number.isInteger(s.count) &&
+      Number.isSafeInteger(s.count) &&
       s.count >= 0 &&
       typeof s.paused === 'boolean'
     ) {
@@ -31,7 +31,7 @@ const toggleEl = document.getElementById('toggle');
 function current() {
   return paused
     ? baseCount
-    : baseCount + Math.floor((Date.now() - startedAt) / 1000);
+    : baseCount + Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
 }
 
 function persist() {

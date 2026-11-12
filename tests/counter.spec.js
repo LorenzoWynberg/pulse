@@ -52,7 +52,20 @@ test('persists across reload, including paused state', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
 });
 
+test('persists a running count across reload and keeps counting', async ({
+  page,
+}) => {
+  await open(page);
+  await page.clock.runFor(4000);
+  await page.reload();
+  await expect(count(page)).toHaveText('4');
+  await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
+  await page.clock.runFor(1000);
+  await expect(count(page)).toHaveText('5');
+});
+
 for (const bad of [
+  '{"count":1e21,"paused":false}',
   'not json',
   '{"count":-1,"paused":false}',
   '{"count":1.5,"paused":false}',
