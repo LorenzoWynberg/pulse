@@ -154,15 +154,39 @@ test('reset while paused stays paused and persists 0', async ({ page }) => {
   await expect(page.locator('#toggle')).toHaveText('Resume');
 });
 
-test('reset persists 0 while running and when 0 was already shown', async ({
-  page,
-}) => {
-  await open(page);
-  await page.clock.runFor(500);
+test('reset rewrites stored state to 0 while running', async ({ page }) => {
+  await open(page, JSON.stringify({ count: 7, paused: false }));
+  await expect(count(page)).toHaveText('7');
   await page.locator('#reset').click();
+  await expect(count(page)).toHaveText('0');
+  const stored = await page.evaluate(
+    (k) => globalThis.localStorage.getItem(k),
+    KEY,
+  );
+  expect(JSON.parse(stored)).toEqual({ count: 0, paused: false });
   await page.reload();
   await expect(count(page)).toHaveText('0');
   await expect(page.locator('#toggle')).toHaveText('Pause');
+});
+
+test('reset with throwing setItem still zeroes without errors', async ({
+  page,
+}) => {
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(() => {
+    globalThis.Storage.prototype.setItem = () => {
+      throw new Error('quota');
+    };
+  });
+  await open(page);
+  await page.clock.runFor(4000);
+  await expect(count(page)).toHaveText('4');
+  await page.locator('#reset').click();
+  await expect(count(page)).toHaveText('0');
+  await page.clock.runFor(2000);
+  await expect(count(page)).toHaveText('2');
+  expect(errors).toEqual([]);
 });
 
 test('keyboard reaches reset after toggle', async ({ page }) => {
@@ -172,6 +196,10 @@ test('keyboard reaches reset after toggle', async ({ page }) => {
   await page.keyboard.press('Tab');
   await expect(page.locator('#reset')).toBeFocused();
   await page.keyboard.press('Enter');
+  await expect(count(page)).toHaveText('0');
+  await page.clock.runFor(3000);
+  await expect(count(page)).toHaveText('3');
+  await page.keyboard.press('Space');
   await expect(count(page)).toHaveText('0');
 });
 
