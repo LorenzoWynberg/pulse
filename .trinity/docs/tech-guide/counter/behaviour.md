@@ -26,4 +26,4 @@ The `pulsing` class on `#count` restarts its beat animation on each new second a
 
 ## Tests
 
-`tests/counter.spec.js` covers ticking, pause and resume, reload persistence in both states, corrupt storage and unavailable storage.
+`tests/counter.spec.js` covers ticking, pause and resume, reload persistence in both states, corrupt storage and unavailable storage. Reset tests cover zeroing while running and paused, the stored `{count: 0, paused}` after a click, Space activation and a throwing `setItem`.
