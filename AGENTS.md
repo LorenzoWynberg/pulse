@@ -12,3 +12,5 @@ Its documentation starts at [`.trinity/docs/index.md`](.trinity/docs/index.md), 
 - `user-guide/<section>/<chapter>.md`: what a person sees and does
 
 <!-- TRINITY-MANAGED-END -->
+
+`DESIGN.md` is the source of the design (tokens in `styles.css`). `package.json` and `package-lock.json` are the record of the stack (counter state is plain browser localStorage, no dependency).
