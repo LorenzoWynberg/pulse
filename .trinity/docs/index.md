@@ -12,3 +12,4 @@ Pulse is a static page (`index.html`, `styles.css`, `app.js`) served from the re
 
 - [Checks](rules/checks.md): what a change must pass
 - [Scaffold](tech-guide/scaffold/layout.md): files, tooling and the test server
+- [Counter](tech-guide/counter/behaviour.md): state, persistence and animation
