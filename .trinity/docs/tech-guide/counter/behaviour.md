@@ -8,6 +8,10 @@ The page shows one number (`#count`, `data-testid="count"`) that rises by one ea
 - A `setInterval` at 250 ms calls `render`, which updates the text and persists only when the value changed.
 - Pause folds the elapsed time into `baseCount`. Resume resets `startedAt` to now.
 
+## Reset
+
+`#reset` (Reset) sets `baseCount` to 0 and `startedAt` to now, and clears the `shown` cache so `render` rewrites the text and persists `{count: 0, paused}` even when 0 was already shown. The paused flag, the toggle label and the pulsing class are untouched. There is no confirmation.
+
 ## Persistence
 
 - `localStorage` key `pulse:state` holds `{ "count": <int>, "paused": <bool> }`.
@@ -22,4 +26,4 @@ The `pulsing` class on `#count` restarts its beat animation on each new second a
 
 ## Tests
 
-`tests/counter.spec.js` covers ticking, pause and resume, reload persistence in both states, corrupt storage and unavailable storage.
+`tests/counter.spec.js` covers ticking, pause and resume, reload persistence in both states, corrupt storage and unavailable storage. Reset tests cover zeroing while running and paused, the stored `{count: 0, paused}` after a click, Space activation and a throwing `setItem`.

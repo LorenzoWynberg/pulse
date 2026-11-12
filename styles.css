@@ -96,7 +96,15 @@ main {
   }
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-4);
+}
+
 .toggle {
+  max-width: 100%;
   min-width: 11rem;
   min-height: 44px;
   padding: var(--spacing-2, 0.5rem) var(--spacing-6);
