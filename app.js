@@ -27,6 +27,7 @@ let startedAt = Date.now();
 
 const countEl = document.getElementById('count');
 const toggleEl = document.getElementById('toggle');
+const resetEl = document.getElementById('reset');
 
 function current() {
   return paused
@@ -73,7 +74,16 @@ function toggle() {
   render();
 }
 
+function reset() {
+  baseCount = 0;
+  startedAt = Date.now();
+  // Clear the cache so render() updates the text and persists even when 0 is shown.
+  shown = null;
+  render();
+}
+
 toggleEl.addEventListener('click', toggle);
+resetEl.addEventListener('click', reset);
 window.addEventListener('pagehide', persist);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') persist();
