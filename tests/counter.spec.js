@@ -121,6 +121,94 @@ test('animates by default and tabular numerals are used', async ({ page }) => {
   await expect(page.locator('[aria-live]')).toHaveCount(0);
 });
 
+test('reset zeroes a running count and keeps counting', async ({ page }) => {
+  const dialogs = [];
+  page.on('dialog', (d) => dialogs.push(d.type()));
+  await open(page);
+  await page.clock.runFor(5000);
+  await page.locator('#reset').click();
+  await expect(count(page)).toHaveText('0');
+  await page.clock.runFor(3000);
+  await expect(count(page)).toHaveText('3');
+  await expect(page.locator('#toggle')).toHaveText('Pause');
+  await expect(count(page)).toHaveClass(/pulsing/);
+  expect(dialogs).toEqual([]);
+});
+
+test('reset while paused stays paused and persists 0', async ({ page }) => {
+  await open(page);
+  await page.clock.runFor(4000);
+  await page.locator('#toggle').click();
+  await page.locator('#reset').click();
+  await expect(count(page)).toHaveText('0');
+  await page.clock.runFor(5000);
+  await expect(count(page)).toHaveText('0');
+  await expect(page.locator('#toggle')).toHaveText('Resume');
+  const stored = await page.evaluate(
+    (k) => globalThis.localStorage.getItem(k),
+    KEY,
+  );
+  expect(JSON.parse(stored)).toEqual({ count: 0, paused: true });
+  await page.reload();
+  await expect(count(page)).toHaveText('0');
+  await expect(page.locator('#toggle')).toHaveText('Resume');
+});
+
+test('reset rewrites stored state to 0 while running', async ({ page }) => {
+  await open(page, JSON.stringify({ count: 7, paused: false }));
+  await expect(count(page)).toHaveText('7');
+  await page.locator('#reset').click();
+  await expect(count(page)).toHaveText('0');
+  const stored = await page.evaluate(
+    (k) => globalThis.localStorage.getItem(k),
+    KEY,
+  );
+  expect(JSON.parse(stored)).toEqual({ count: 0, paused: false });
+  await page.reload();
+  await expect(count(page)).toHaveText('0');
+  await expect(page.locator('#toggle')).toHaveText('Pause');
+});
+
+test('reset with throwing setItem still zeroes without errors', async ({
+  page,
+}) => {
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(() => {
+    globalThis.Storage.prototype.setItem = () => {
+      throw new Error('quota');
+    };
+  });
+  await open(page);
+  await page.clock.runFor(4000);
+  await expect(count(page)).toHaveText('4');
+  await page.locator('#reset').click();
+  await expect(count(page)).toHaveText('0');
+  await page.clock.runFor(2000);
+  await expect(count(page)).toHaveText('2');
+  expect(errors).toEqual([]);
+});
+
+test('keyboard reaches reset after toggle', async ({ page }) => {
+  await open(page);
+  await page.clock.runFor(2000);
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#reset')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(count(page)).toHaveText('0');
+  await page.clock.runFor(3000);
+  await expect(count(page)).toHaveText('3');
+  await page.keyboard.press('Space');
+  await expect(count(page)).toHaveText('0');
+});
+
+test('reset is visible within 320px', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await open(page);
+  await expect(page.locator('#reset')).toBeInViewport({ ratio: 1 });
+});
+
 for (const width of [320, 768, 1440]) {
   test(`no horizontal scroll at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
@@ -145,5 +233,6 @@ for (const scheme of ['light', 'dark']) {
     );
     expect(bg).not.toBe('rgba(0, 0, 0, 0)');
     await expect(page.locator('#toggle')).toBeVisible();
+    await expect(page.locator('#reset')).toBeVisible();
   });
 }
