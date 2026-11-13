@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.0 - 2026-11-12
+
+### New
+
+#### Reset the counter
+
+A **Reset** button now sits next to Pause/Resume. One click sets the counter back to 0 right away. You no longer need to reload the page or clear your browser storage to start over, and no confirmation dialog appears.
+
+Reset changes only the count. A running counter restarts from 0, keeps counting, and keeps its pulse. A paused counter shows 0 and stays paused until you press Resume.
+
+The reset count is saved along with whether the counter was paused, so a reload still shows 0 in the same state. If your browser blocks storage, such as in some private modes, Reset still sets the display to 0 and the page shows no errors.
+
+#### Built to work everywhere Pause does
+
+Reset looks and behaves like the Pause/Resume button. It uses the same colours and the same visible focus outline in light and dark mode. You can reach it with Tab right after Pause/Resume and press it with Enter or Space. On narrow screens down to 320px wide, the two buttons wrap onto separate lines, so both stay fully visible and the page doesn't scroll sideways.
+
 ## 1.1.1 - 2026-11-12
 
 ### New
