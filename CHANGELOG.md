@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 - 2026-11-12
+
+### New
+
+#### See the count from any tab
+
+The browser tab title now shows Pulse's count, so you can check it without switching to the Pulse tab. While the counter runs, the title updates with the live count, for example "42 · Pulse". When you pause the counter, the title reads "Paused · 42 · Pulse", so a glance at your tab bar tells you whether it's running and where the count stands. The title also shows the right state when you reload the page while paused.
+
 ## 1.1.0 - 2026-11-12
 
 ### New: Pulse is live
