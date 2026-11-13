@@ -45,6 +45,7 @@ function persist() {
 let shown = null;
 function render() {
   const value = current();
+  document.title = paused ? `Paused · ${value} · Pulse` : `${value} · Pulse`;
   if (value !== shown) {
     shown = value;
     countEl.textContent = String(value);
